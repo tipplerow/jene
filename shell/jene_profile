@@ -1,0 +1,35 @@
+########################################################################
+# Environment variables required to compile and run JENE applications.
+########################################################################
+
+if [ -z "${GITHUB_ROOT}" ]
+then
+    echo "Environment variable GITHUB_ROOT is not set; exiting."
+    exit 1
+fi
+
+if [ -z "${TIPPLEROW_ROOT}" ]
+then
+    echo "Environment variable TIPPLEROW_ROOT is not set; exiting."
+    exit 1
+fi
+
+if [ -z "${TIPPLEROW_DATA_VAULT}" ]
+then
+    echo "Environment variable TIPPLEROW_DATA_VAULT is not set; exiting."
+    exit 1
+fi
+
+# GitHub project directory
+export JENE_HOME=${GITHUB_ROOT}/jene
+
+# Directory of the active Ensembl release
+export JENE_ENSEMBL_RELEASE_DIR=${TIPPLEROW_DATA_VAULT}/Ensembl/Release99
+
+# Full path to the Ensembl data files
+export JENE_ENSEMBL_GENOME_DIR=${TIPPLEROW_DATA_VAULT}/Ensembl/Release99
+export JENE_ENSEMBL_PROTEOME_FILE=${TIPPLEROW_DATA_VAULT}/Ensembl/Release99/Homo_sapiens.GRCh38.pep.all.fa.gz
+export JENE_ENSEMBL_SECONDARY_PROTEOME=${TIPPLEROW_DATA_VAULT}/Ensembl/Release96/Homo_sapiens.GRCh37.pep.all.fa.gz
+
+# Full path to the Hugo symbol mapping table
+export JENE_HUGO_MASTER_FILE=${TIPPLEROW_DATA_VAULT}/Hugo/Hugo_Master.tsv.gz

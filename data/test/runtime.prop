@@ -1,0 +1,8 @@
+jam.app.reportDir = /Users/scott/GitHub/jean/data/test
+jean.ensembl.proteomeFile = /Users/scott/Dropbox/TippleRow/DataVault/Ensembl/Release99/Homo_sapiens.GRCh38.pep.all.fa.gz
+jean.ensembl.secondaryProteome = /Users/scott/Dropbox/TippleRow/DataVault/Ensembl/Release96/Homo_sapiens.GRCh37.pep.all.fa.gz
+jean.hugo.masterFile = /Users/scott/Dropbox/TippleRow/DataVault/Hugo/Hugo_Master.tsv.gz
+jean.maf.ccfThreshold = 0.90
+jean.maf.mafFileInput = /Users/scott/GitHub/jean/data/test/ppe_missense.maf
+jean.neo.PeptidePairProcessor.peptideLengths = 9, 10
+jean.neo.PeptidePairProcessor.reportFile = peptide-pair-engine.txt
