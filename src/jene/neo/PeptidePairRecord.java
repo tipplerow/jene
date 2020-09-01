@@ -134,14 +134,35 @@ public final class PeptidePairRecord extends TumorGeneRecord {
      * formatted peptide pair record.
      */
     public static PeptidePairRecord parse(String line) {
-        String[] fields = DELIM.split(line, 6);
+        return parse(DELIM.split(line, 6), 0);
+    }
 
-        TumorBarcode tumorBarcode = TumorBarcode.instance(fields[0]);
-        HugoSymbol   hugoSymbol   = HugoSymbol.instance(fields[1]);
-        int          rangeLower   = Integer.parseInt(fields[2]);
-        int          rangeUpper   = Integer.parseInt(fields[3]);
-        SelfPeptide  selfPeptide  = SelfPeptide.instance(fields[4]);
-        NeoPeptide   neoPeptide   = NeoPeptide.instance(fields[5]);
+    /**
+     * Creates a new peptide pair record by parsing an array of
+     * fields.
+     *
+     * <p>The fields must start at index {@code offset} and be
+     * arranged sequentially and contiguously.
+     *
+     * @param fields an array of individual fields extracted from
+     * a flat file.
+     *
+     * @param offset the index of the tumor barcode in the input
+     * array.
+     *
+     * @return the peptide pair record encoded in the specified
+     * fields.
+     *
+     * @throws RuntimeException unless the fields define a valid
+     * peptide pair record.
+     */
+    public static PeptidePairRecord parse(String[] fields, int offset) {
+        TumorBarcode tumorBarcode = TumorBarcode.instance(fields[offset]);
+        HugoSymbol   hugoSymbol   = HugoSymbol.instance(fields[offset + 1]);
+        int          rangeLower   = Integer.parseInt(fields[offset + 2]);
+        int          rangeUpper   = Integer.parseInt(fields[offset + 3]);
+        SelfPeptide  selfPeptide  = SelfPeptide.instance(fields[offset + 4]);
+        NeoPeptide   neoPeptide   = NeoPeptide.instance(fields[offset + 5]);
 
         return instance(tumorBarcode, hugoSymbol,
                         IntRange.instance(rangeLower, rangeUpper),
