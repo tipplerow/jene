@@ -9,7 +9,6 @@ import java.util.TreeSet;
 import jam.app.JamLogger;
 import jam.math.IntRange;
 import jam.util.ListUtil;
-import jam.util.StreamUtil;
 
 import jene.ensembl.EnsemblProteinDb;
 import jene.hugo.HugoMaster;
@@ -76,8 +75,16 @@ public final class PeptidePairEngine {
         if (!isInitialized())
             throw new IllegalStateException("The PeptidePairEngine has not been initialized.");
 
-        PeptidePairEngine engine = new PeptidePairEngine(missenseGroup, peptideLengths);
-        return engine.generate();
+        PeptidePairEngine engine =
+            new PeptidePairEngine(missenseGroup, peptideLengths);
+
+        try {
+            return engine.generate();
+        }
+        catch (RuntimeException ex) {
+            JamLogger.warn(ex);
+            return List.of();
+        }
     }
 
     /**
@@ -99,15 +106,22 @@ public final class PeptidePairEngine {
      */
     public static List<PeptidePairRecord> generate(MissenseTable missenseTable, int... peptideLengths) {
         List<MissenseGroup> missenseGroups = missenseTable.group();
+        missenseGroups.sort(MissenseGroup.BARCODE_SYMBOL_COMPARATOR);
 
+        /*
         List<List<PeptidePairRecord>> engineOutput =
-            StreamUtil.applyParallel(missenseGroups, group -> generate(group, peptideLengths));
+            ListUtil.apply(missenseGroups, group -> generate(group, peptideLengths));
+        //StreamUtil.applyParallel(missenseGroups, group -> generate(group, peptideLengths));
 
         JamLogger.info("Concatenating peptide pair records...");
         List<PeptidePairRecord> pairRecords = ListUtil.cat(engineOutput);
+        */
 
-        JamLogger.info("Sorting peptide pair records...");
-        pairRecords.sort(PeptidePairRecord.COMPARATOR);
+        List<PeptidePairRecord> pairRecords =
+            new ArrayList<PeptidePairRecord>();
+
+        for (MissenseGroup missenseGroup : missenseGroups)
+            pairRecords.addAll(generate(missenseGroup, peptideLengths));
 
         return pairRecords;
     }

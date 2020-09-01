@@ -31,7 +31,7 @@ public class MissenseTableTest {
         MissenseTable table = MissenseTable.load("data/test/Miao_missense.maf");
 
         List<MissenseGroup> groups = table.group();
-        groups.sort(MissenseGroup.COMPARATOR);
+        groups.sort(MissenseGroup.BARCODE_SYMBOL_COMPARATOR);
 
         TumorBarcode miao1 = TumorBarcode.instance("AC-DFCI_AC_PD1-1-Tumor-SM-9LRI9");
         TumorBarcode miao2 = TumorBarcode.instance("Y2087_T");
@@ -60,7 +60,7 @@ public class MissenseTableTest {
         assertEquals(TTC39B, groups.get(5).getHugoSymbol());
 
         groups = table.group(miao2);
-        groups.sort(MissenseGroup.COMPARATOR);
+        groups.sort(MissenseGroup.BARCODE_SYMBOL_COMPARATOR);
 
         assertEquals(2, groups.size());
 

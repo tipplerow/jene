@@ -1,0 +1,16 @@
+########################################################################
+# Sample property file for the PeptidePairDriver
+########################################################################
+
+PeptidePairDriver.ensemblProteomeFile = \
+    /Users/scott/Dropbox/TippleRow/DataVault/Ensembl/Release99/Homo_sapiens.GRCh38.pep.all.fa.gz
+
+PeptidePairDriver.ensemblSecondaryProteome = \
+    /Users/scott/Dropbox/TippleRow/DataVault/Ensembl/Release96/Homo_sapiens.GRCh37.pep.all.fa.gz
+
+PeptidePairDriver.hugoMasterFile  = /Users/scott/Dropbox/TippleRow/DataVault/Hugo/Hugo_Master.tsv.gz
+PeptidePairDriver.missenseMAFFile = /Users/scott/Dropbox/TippleRow/DataVault/Miao/Miao_Missense.maf
+PeptidePairDriver.ccfThreshold    = 0.75
+
+PeptidePairDriver.peptideLengths  = 9
+PeptidePairDriver.peptidePairFile = Miao_PeptidePair_9.txt

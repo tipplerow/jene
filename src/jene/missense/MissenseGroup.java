@@ -109,7 +109,7 @@ public final class MissenseGroup extends AbstractCollection<MissenseRecord> impl
      * A comparator that orders missense groups by tumor barcode
      * first, then HUGO symbol.
      */
-    public static Comparator<MissenseGroup> COMPARATOR =
+    public static Comparator<MissenseGroup> BARCODE_SYMBOL_COMPARATOR =
         new Comparator<MissenseGroup>() {
             @Override public int compare(MissenseGroup group1, MissenseGroup group2) {
                 int cmp = group1.tumorBarcode.compareTo(group2.tumorBarcode);
@@ -254,7 +254,7 @@ public final class MissenseGroup extends AbstractCollection<MissenseRecord> impl
      * place, or after the input group.
      */
     @Override public int compareTo(MissenseGroup that) {
-        return COMPARATOR.compare(this, that);
+        return BARCODE_SYMBOL_COMPARATOR.compare(this, that);
     }
 
     /**
