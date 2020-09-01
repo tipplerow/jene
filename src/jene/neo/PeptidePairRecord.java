@@ -188,7 +188,18 @@ public final class PeptidePairRecord extends TumorGeneRecord {
      * @return a string containing the formatted text.
      */
     public String format() {
-        LineBuilder builder = new LineBuilder(DELIM);
+        return format(DELIM);
+    }
+
+    /**
+     * Formats this record for output to a delimited flat file.
+     *
+     * @param delimiter the flat file field delimiter.
+     *
+     * @return a string containing the formatted text.
+     */
+    public String format(Delimiter delimiter) {
+        LineBuilder builder = new LineBuilder(delimiter);
 
         builder.append(tumorBarcode.getKey());
         builder.append(hugoSymbol.getKey());
