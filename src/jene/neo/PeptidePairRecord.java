@@ -110,7 +110,20 @@ public final class PeptidePairRecord extends TumorGeneRecord {
      * records.
      */
     public static String header() {
-        LineBuilder builder = new LineBuilder(DELIM);
+        return header(DELIM);
+    }
+
+    /**
+     * Returns the header line for flat files containing peptide pair
+     * records.
+     *
+     * @param delimiter the flat file field delimiter.
+     *
+     * @return the header line for flat files containing peptide pair
+     * records.
+     */
+    public static String header(Delimiter delimiter) {
+        LineBuilder builder = new LineBuilder(delimiter);
 
         builder.append(TumorBarcode.COLUMN_NAME);
         builder.append(HugoSymbol.COLUMN_NAME);
