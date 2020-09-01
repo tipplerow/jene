@@ -108,15 +108,6 @@ public final class PeptidePairEngine {
         List<MissenseGroup> missenseGroups = missenseTable.group();
         missenseGroups.sort(MissenseGroup.BARCODE_SYMBOL_COMPARATOR);
 
-        /*
-        List<List<PeptidePairRecord>> engineOutput =
-            ListUtil.apply(missenseGroups, group -> generate(group, peptideLengths));
-        //StreamUtil.applyParallel(missenseGroups, group -> generate(group, peptideLengths));
-
-        JamLogger.info("Concatenating peptide pair records...");
-        List<PeptidePairRecord> pairRecords = ListUtil.cat(engineOutput);
-        */
-
         List<PeptidePairRecord> pairRecords =
             new ArrayList<PeptidePairRecord>();
 
