@@ -1,6 +1,8 @@
 
 package jene.neo;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 
 import jam.io.Delimiter;
@@ -180,6 +182,26 @@ public final class PeptidePairRecord extends TumorGeneRecord {
         return instance(tumorBarcode, hugoSymbol,
                         IntRange.instance(rangeLower, rangeUpper),
                         PeptidePair.instance(selfPeptide, neoPeptide));
+    }
+
+    /**
+     * Extracts the peptides from a collection of pair records.
+     *
+     * @param pairRecords the peptide pair records to process.
+     *
+     * @return the neo-peptides and self-peptides contained in the
+     * specified records (in no particular order).
+     */
+    public static Collection<Peptide> peptides(Collection<PeptidePairRecord> pairRecords) {
+        Collection<Peptide> peptides =
+            new ArrayList<Peptide>(2 * pairRecords.size());
+
+        for (PeptidePairRecord record : pairRecords) {
+            peptides.add(record.getNeoPeptide());
+            peptides.add(record.getSelfPeptide());
+        }
+
+        return peptides;
     }
 
     /**
