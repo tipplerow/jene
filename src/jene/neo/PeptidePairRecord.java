@@ -234,6 +234,15 @@ public final class PeptidePairRecord extends TumorGeneRecord {
     }
 
     /**
+     * Returns the neo/self peptide pair in this record.
+     *
+     * @return the neo/self peptide pair in this record.
+     */
+    public PeptidePair getPeptidePair() {
+        return peptidePair;
+    }
+
+    /**
      * Returns the unit-offset range of the amino acid positions in
      * the peptide fragments.
      *
