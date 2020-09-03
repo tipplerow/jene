@@ -72,6 +72,9 @@ public final class PeptidePairTable {
             new ArrayList<PeptidePairRecord>();
 
         try (LineReader reader = LineReader.open(fileName)) {
+            // Skip header line...
+            reader.next();
+
             for (String line : reader)
                 records.add(PeptidePairRecord.parse(line));
         }
