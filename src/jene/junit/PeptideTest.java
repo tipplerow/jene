@@ -43,7 +43,23 @@ public class PeptideTest {
         assertEquals(Residue.Leu, pep.get(2));
     }
 
-    @Test public void testContains() {
+    @Test public void testContainsIndex() {
+        Peptide pep = Peptide.instance("AVWPRQQCS");
+
+        UnitIndex index1 = UnitIndex.instance(1);
+        UnitIndex index5 = UnitIndex.instance(5);
+        UnitIndex index9 = UnitIndex.instance(9);
+        UnitIndex index10 = UnitIndex.instance(10);
+        UnitIndex index200 = UnitIndex.instance(200);
+
+        assertTrue(pep.contains(index1));
+        assertTrue(pep.contains(index5));
+        assertTrue(pep.contains(index9));
+        assertFalse(pep.contains(index10));
+        assertFalse(pep.contains(index200));
+    }
+
+    @Test public void testContainsRange() {
         Peptide pep = Peptide.instance("AVWPRQQCS");
 
         UnitIndexRange range1 = UnitIndexRange.instance(1, 5);
@@ -122,6 +138,11 @@ public class PeptideTest {
 
         // "p2" should be the same physical object...
         assertTrue(p1 == p2);
+    }
+
+    @Test public void testLastIndex() {
+        assertTrue(Peptide.instance("AVWPR").lastIndex().getUnitIndex() == 5);
+        assertTrue(Peptide.instance("AVWPRQQCS").lastIndex().getUnitIndex() == 9);
     }
 
     @Test public void testLoad() {

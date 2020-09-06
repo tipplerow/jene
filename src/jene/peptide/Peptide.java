@@ -244,6 +244,19 @@ public final class Peptide extends AbstractList<Residue> {
     }
 
     /**
+     * Identifies valid residue positions (those that lie within this
+     * peptide).
+     *
+     * @param position the unit-offset index of residues in question.
+     *
+     * @return {@code true} iff the input index identifies a valid
+     * residue of this peptide (lies within this peptide).
+     */
+    public boolean contains(UnitIndex position) {
+        return position.LE(lastIndex());
+    }
+
+    /**
      * Identifies valid fragment ranges (those that lie entirely
      * within this peptide).
      *
@@ -318,6 +331,17 @@ public final class Peptide extends AbstractList<Residue> {
                 return false;
 
         return true;
+    }
+
+    /**
+     * Returns the index of the last (C-terminus or right-most)
+     * residue in this peptide.
+     *
+     * @return the index of the last (C-terminus or right-most)
+     * residue in this peptide.
+     */
+    public UnitIndex lastIndex() {
+        return UnitIndex.instance(length());
     }
 
     /**
