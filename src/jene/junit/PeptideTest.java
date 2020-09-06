@@ -43,6 +43,20 @@ public class PeptideTest {
         assertEquals(Residue.Leu, pep.get(2));
     }
 
+    @Test public void testContains() {
+        Peptide pep = Peptide.instance("AVWPRQQCS");
+
+        UnitIndexRange range1 = UnitIndexRange.instance(1, 5);
+        UnitIndexRange range2 = UnitIndexRange.instance(3, 9);
+        UnitIndexRange range3 = UnitIndexRange.instance(5, 10);
+        UnitIndexRange range4 = UnitIndexRange.instance(20, 100);
+
+        assertTrue(pep.contains(range1));
+        assertTrue(pep.contains(range2));
+        assertFalse(pep.contains(range3));
+        assertFalse(pep.contains(range4));
+    }
+
     @Test public void testEquals() {
         Peptide p1 = Peptide.of(Residue.His, Residue.Gln);
         Peptide p2 = Peptide.of(Residue.His, Residue.Gln);

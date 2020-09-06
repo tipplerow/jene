@@ -244,6 +244,20 @@ public final class Peptide extends AbstractList<Residue> {
     }
 
     /**
+     * Identifies valid fragment ranges (those that lie entirely
+     * within this peptide).
+     *
+     * @param range the unit-offset index range of residues in the
+     * fragment.
+     *
+     * @return {@code true} iff the input range identifies a valid
+     * fragment of this peptide (lies entirely within this peptide).
+     */
+    public boolean contains(UnitIndexRange range) {
+        return range.upper().getUnitIndex() <= length();
+    }
+
+    /**
      * Formats the residues in this peptide for output to a CSV file.
      *
      * @return the residues in this peptide formatted for output to a
