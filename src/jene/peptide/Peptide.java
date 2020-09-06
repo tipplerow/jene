@@ -374,13 +374,15 @@ public final class Peptide extends AbstractList<Residue> {
      * @return a list containing all native N-mers from this peptide.
      */
     public List<Peptide> nativeFragments(int N) {
-        if (length() < N)
+        int fragmentCount = length() - N + 1;
+
+        if (fragmentCount < 1)
             return Collections.emptyList();
 
-        List<Peptide> fragments = new ArrayList<Peptide>(length() - N + 1);
+        List<Peptide> fragments = new ArrayList<Peptide>(fragmentCount);
 
-        for (int start = 1; start <= length() - N + 1; ++start) {
-            Peptide fragment = fragment(UnitIndexRange.instance(start, start + N - 1));
+        for (int nterm = 1; nterm <= fragmentCount; ++nterm) {
+            Peptide fragment = fragment(UnitIndexRange.forward(UnitIndex.instance(nterm), N));
 
             if (fragment.isNative())
                 fragments.add(fragment);
