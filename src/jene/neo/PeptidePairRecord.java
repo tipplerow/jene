@@ -7,7 +7,7 @@ import java.util.Comparator;
 
 import jam.io.Delimiter;
 import jam.lang.JamException;
-import jam.math.IntRange;
+import jam.math.UnitIndexRange;
 import jam.report.LineBuilder;
 
 import jene.hugo.HugoSymbol;
@@ -20,16 +20,17 @@ import jene.tcga.TumorGeneRecord;
  * self-peptide from which it originated.
  */
 public final class PeptidePairRecord extends TumorGeneRecord {
-    private final IntRange peptideRange;
     private final PeptidePair peptidePair;
+    private final UnitIndexRange peptideRange;
 
-    private PeptidePairRecord(TumorBarcode tumorBarcode,
-                              HugoSymbol   hugoSymbol,
-                              IntRange     peptideRange,
-                              PeptidePair  peptidePair) {
+    private PeptidePairRecord(TumorBarcode   tumorBarcode,
+                              HugoSymbol     hugoSymbol,
+                              UnitIndexRange peptideRange,
+                              PeptidePair    peptidePair) {
         super(tumorBarcode, hugoSymbol);
+
+        this.peptidePair = peptidePair;
         this.peptideRange = peptideRange;
-        this.peptidePair  = peptidePair;
     }
 
     /**
@@ -50,7 +51,7 @@ public final class PeptidePairRecord extends TumorGeneRecord {
                 if (barcodeSymbolCmp != 0)
                     return barcodeSymbolCmp;
                 else
-                    return IntRange.BOUND_COMPARATOR.compare(rec1.peptideRange, rec2.peptideRange);
+                    return UnitIndexRange.BOUND_COMPARATOR.compare(rec1.peptideRange, rec2.peptideRange);
             }
         };
 
@@ -70,10 +71,10 @@ public final class PeptidePairRecord extends TumorGeneRecord {
      * @return the peptide pair record with the specified
      * components.
      */
-    public static PeptidePairRecord instance(TumorBarcode tumorBarcode,
-                                             HugoSymbol   hugoSymbol,
-                                             IntRange     peptideRange,
-                                             PeptidePair  peptidePair) {
+    public static PeptidePairRecord instance(TumorBarcode   tumorBarcode,
+                                             HugoSymbol     hugoSymbol,
+                                             UnitIndexRange peptideRange,
+                                             PeptidePair    peptidePair) {
         return new PeptidePairRecord(tumorBarcode, hugoSymbol, peptideRange, peptidePair);
     }
 
@@ -95,11 +96,11 @@ public final class PeptidePairRecord extends TumorGeneRecord {
      * @return the peptide pair record with the specified
      * components.
      */
-    public static PeptidePairRecord instance(TumorBarcode tumorBarcode,
-                                             HugoSymbol   hugoSymbol,
-                                             IntRange     peptideRange,
-                                             SelfPeptide  selfPeptide,
-                                             NeoPeptide   neoPeptide) {
+    public static PeptidePairRecord instance(TumorBarcode   tumorBarcode,
+                                             HugoSymbol     hugoSymbol,
+                                             UnitIndexRange peptideRange,
+                                             SelfPeptide    selfPeptide,
+                                             NeoPeptide     neoPeptide) {
         return instance(tumorBarcode, hugoSymbol, peptideRange,
                         PeptidePair.instance(selfPeptide, neoPeptide));
     }                                            
@@ -180,7 +181,7 @@ public final class PeptidePairRecord extends TumorGeneRecord {
         NeoPeptide   neoPeptide   = NeoPeptide.instance(fields[offset + 5]);
 
         return instance(tumorBarcode, hugoSymbol,
-                        IntRange.instance(rangeLower, rangeUpper),
+                        UnitIndexRange.instance(rangeLower, rangeUpper),
                         PeptidePair.instance(selfPeptide, neoPeptide));
     }
 
@@ -249,7 +250,7 @@ public final class PeptidePairRecord extends TumorGeneRecord {
      * @return the unit-offset range of the amino acid positions in
      * the peptide fragments.
      */
-    public IntRange getPeptideRange() {
+    public UnitIndexRange getPeptideRange() {
         return peptideRange;
     }
 

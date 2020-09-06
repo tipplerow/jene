@@ -3,7 +3,7 @@ package jene.junit;
 
 import java.util.List;
 
-import jam.math.IntRange;
+import jam.math.UnitIndexRange;
 
 import jene.ensembl.EnsemblProteinDb;
 import jene.hugo.HugoMaster;
@@ -37,10 +37,10 @@ public class PeptidePairEngineTest {
 
         assertEquals(21, pairRecords.size());
 
-        assertEquals(IntRange.instance(9, 17), pairRecords.get(0).getPeptideRange());
-        assertEquals(IntRange.instance(20, 28), pairRecords.get(11).getPeptideRange());
-        assertEquals(IntRange.instance(168, 176), pairRecords.get(12).getPeptideRange());
-        assertEquals(IntRange.instance(176, 184), pairRecords.get(20).getPeptideRange());
+        assertEquals(UnitIndexRange.instance(9, 17), pairRecords.get(0).getPeptideRange());
+        assertEquals(UnitIndexRange.instance(20, 28), pairRecords.get(11).getPeptideRange());
+        assertEquals(UnitIndexRange.instance(168, 176), pairRecords.get(12).getPeptideRange());
+        assertEquals(UnitIndexRange.instance(176, 184), pairRecords.get(20).getPeptideRange());
 
         missenseGroups = missenseTable.group(barcode2);
         pairRecords = PeptidePairEngine.generate(missenseGroups.get(0), 9);
@@ -48,20 +48,20 @@ public class PeptidePairEngineTest {
         assertEquals(1, missenseGroups.size());
         assertEquals(16, pairRecords.size());
 
-        assertEquals(IntRange.instance(1, 9), pairRecords.get(0).getPeptideRange());
-        assertEquals(IntRange.instance(3, 11), pairRecords.get(2).getPeptideRange());
-        assertEquals(IntRange.instance(168, 176), pairRecords.get(3).getPeptideRange());
-        assertEquals(IntRange.instance(181, 189), pairRecords.get(15).getPeptideRange());
+        assertEquals(UnitIndexRange.instance(1, 9), pairRecords.get(0).getPeptideRange());
+        assertEquals(UnitIndexRange.instance(3, 11), pairRecords.get(2).getPeptideRange());
+        assertEquals(UnitIndexRange.instance(168, 176), pairRecords.get(3).getPeptideRange());
+        assertEquals(UnitIndexRange.instance(181, 189), pairRecords.get(15).getPeptideRange());
 
         pairRecords = PeptidePairEngine.generate(missenseTable, 9);
 
         assertEquals(37, pairRecords.size());
 
         assertEquals(barcode1, pairRecords.get(0).getTumorBarcode());
-        assertEquals(IntRange.instance(9, 17), pairRecords.get(0).getPeptideRange());
+        assertEquals(UnitIndexRange.instance(9, 17), pairRecords.get(0).getPeptideRange());
 
         assertEquals(barcode2, pairRecords.get(36).getTumorBarcode());
-        assertEquals(IntRange.instance(181, 189), pairRecords.get(36).getPeptideRange());
+        assertEquals(UnitIndexRange.instance(181, 189), pairRecords.get(36).getPeptideRange());
     }
 
     public static void main(String[] args) {

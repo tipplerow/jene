@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import jam.app.JamLogger;
-import jam.math.IntRange;
+import jam.math.UnitIndexRange;
 import jam.util.ListUtil;
 
 import jene.ensembl.EnsemblProteinDb;
@@ -127,25 +127,19 @@ public final class PeptidePairEngine {
 
         Peptide nativePeptide = missenseGroup.resolveNative(ensemblDb, hugoMaster);
         Peptide mutatedPeptide = missenseGroup.mutate(nativePeptide);
-        Set<IntRange> fragmentRanges = resolveFragmentRanges(nativePeptide.length());
+        Set<UnitIndexRange> fragmentRanges = resolveFragmentRanges(nativePeptide.length());
 
         List<PeptidePairRecord> pairRecords =
             new ArrayList<PeptidePairRecord>(fragmentRanges.size());
         
-        for (IntRange fragment : fragmentRanges) {
-            //
-            // The fragment ranges must be shifted by one to translate
-            // from the zero-offset residue indexes to the unit-offset
-            // mutation positions...
-            //
-            IntRange unitRange = fragment.shift(1);
-            NeoPeptide neoPeptide = NeoPeptide.instance(mutatedPeptide.fragment(fragment));
-            SelfPeptide selfPeptide = SelfPeptide.instance(nativePeptide.fragment(fragment));
+        for (UnitIndexRange fragmentRange : fragmentRanges) {
+            NeoPeptide neoPeptide = NeoPeptide.instance(mutatedPeptide.fragment(fragmentRange));
+            SelfPeptide selfPeptide = SelfPeptide.instance(nativePeptide.fragment(fragmentRange));
 
             PeptidePairRecord pairRecord =
                 PeptidePairRecord.instance(tumorBarcode,
                                            hugoSymbol,
-                                           unitRange,
+                                           fragmentRange,
                                            selfPeptide,
                                            neoPeptide);
 
@@ -155,15 +149,15 @@ public final class PeptidePairEngine {
         return pairRecords;
     }
 
-    private Set<IntRange> resolveFragmentRanges(int nativeLength) {
+    private Set<UnitIndexRange> resolveFragmentRanges(int nativeLength) {
         //
         // Multiple mutations may occur within the same fragment (if
         // their positions are separated by a length smaller than the
         // fragment length), so we accumulate all fragments in a set
         // to avoid duplication...
         //
-        Set<IntRange> fragmentRanges =
-            new TreeSet<IntRange>(IntRange.BOUND_COMPARATOR);
+        Set<UnitIndexRange> fragmentRanges =
+            new TreeSet<UnitIndexRange>(UnitIndexRange.BOUND_COMPARATOR);
 
         for (ProteinChange proteinChange : missenseGroup.getProteinChanges())
             for (int peptideLength : peptideLengths)

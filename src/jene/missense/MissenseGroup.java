@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import jam.lang.JamException;
+import jam.math.UnitIndex;
 import jam.util.CollectionUtil;
 import jam.util.ListUtil;
 import jam.util.ReadOnlyIterator;
@@ -35,8 +36,8 @@ public final class MissenseGroup extends AbstractCollection<MissenseRecord> impl
     private final TumorBarcode tumorBarcode;
     private final EnsemblTranscriptID transcriptID;
 
-    private final Map<Integer, MissenseRecord> positionMap =
-        new TreeMap<Integer, MissenseRecord>();
+    private final Map<UnitIndex, MissenseRecord> positionMap =
+        new TreeMap<UnitIndex, MissenseRecord>();
 
     private MissenseGroup(Collection<MissenseRecord> records) {
         MissenseRecord first = CollectionUtil.peek(records);
@@ -71,6 +72,10 @@ public final class MissenseGroup extends AbstractCollection<MissenseRecord> impl
         return positionMap.put(positionOf(record), record);        
     }
 
+    private static UnitIndex positionOf(MissenseRecord record) {
+        return record.getProteinChange().getPosition();
+    }
+
     private void validateSymbol(MissenseRecord record) {
         HugoSymbol groupSymbol = this.hugoSymbol;
         HugoSymbol recordSymbol = record.getHugoSymbol();
@@ -99,10 +104,6 @@ public final class MissenseGroup extends AbstractCollection<MissenseRecord> impl
 
         if (groupTranscript != null && !recordTranscript.equals(groupTranscript))
             throw JamException.runtime("Inconsistent transcripts: [%s != %s].", recordTranscript, groupTranscript);
-    }
-
-    private static int positionOf(MissenseRecord record) {
-        return record.getProteinChange().getPosition();
     }
 
     /**
@@ -241,7 +242,7 @@ public final class MissenseGroup extends AbstractCollection<MissenseRecord> impl
      * @return a read-only view of the (unit-offset) locations of the
      * mutations in this group.
      */
-    public Set<Integer> viewPositions() {
+    public Set<UnitIndex> viewPositions() {
         return Collections.unmodifiableSet(positionMap.keySet());
     }
 

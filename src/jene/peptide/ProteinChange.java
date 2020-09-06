@@ -8,15 +8,16 @@ import java.util.List;
 import java.util.Set;
 
 import jam.lang.JamException;
-import jam.math.IntRange;
+import jam.math.UnitIndex;
+import jam.math.UnitIndexRange;
 
 /**
  * Represents a single missense mutation in a peptide.
  */
 public final class ProteinChange {
-    private final int position;
-    private final Residue native_;
-    private final Residue mutated;
+    private final UnitIndex position;
+    private final Residue   native_;
+    private final Residue   mutated;
 
     /**
      * The canonical column name for protein changes in the header
@@ -27,14 +28,28 @@ public final class ProteinChange {
     /**
      * Creates a new single missense mutation.
      *
-     * @param position the position in the protein at which the
-     * residue change occurs (starting at position 1, not zero).
+     * @param position the unit-offset position in the protein at
+     * which the residue change occurs (starting at position 1).
      *
      * @param native_ the original (native) residue.
      *
      * @param mutated the final (mutated) residue.
      */
     public ProteinChange(int position, Residue native_, Residue mutated) {
+        this(UnitIndex.instance(position), native_, mutated);
+    }
+
+    /**
+     * Creates a new single missense mutation.
+     *
+     * @param position the unit-offset position in the protein at
+     * which the residue change occurs (starting at position 1).
+     *
+     * @param native_ the original (native) residue.
+     *
+     * @param mutated the final (mutated) residue.
+     */
+    public ProteinChange(UnitIndex position, Residue native_, Residue mutated) {
         this.position = position;
         this.native_  = native_;
         this.mutated  = mutated;
@@ -43,36 +58,11 @@ public final class ProteinChange {
     }
 
     private void validate() {
-        if (position < 1)
-            throw new IllegalArgumentException("Position must be positive.");
-
         if (!native_.isNative())
             throw new IllegalArgumentException("Original residue must be naturally occurring.");
 
         if (!mutated.isNative())
             throw new IllegalArgumentException("Final residue must be naturally occurring.");
-    }
-
-    /**
-     * Applies this mutation to a list of residues (representing the
-     * original native peptide structure).
-     *
-     * @param residues the original native peptide structure.
-     *
-     * @throws RuntimeException unless this mutation lies within the
-     * residue list and the residue at the mutation location matches
-     * the native residue in this mutation.
-     */
-    public void apply(List<Residue> residues) {
-        int residueIndex = getResidueIndex();
-
-        if (residueIndex >= residues.size())
-            throw JamException.runtime("Mutation position lies outside the peptide.");
-
-        if (!residues.get(residueIndex).equals(getNative()))
-            throw JamException.runtime("Mismatch in the native residue [%s].", toString());
-
-        residues.set(residueIndex, getMutated());
     }
 
     /**
@@ -93,17 +83,37 @@ public final class ProteinChange {
         // Ensure that all mutations occur at different locations by
         // keeping a record of those locations...
         //
-        Set<Integer> residueIndexes = new HashSet<Integer>();
+        Set<UnitIndex> positions = new HashSet<UnitIndex>();
 
         for (ProteinChange mutation : mutations) {
-            int residueIndex = mutation.getResidueIndex();
+            UnitIndex position = mutation.getPosition();
 
-            if (residueIndexes.contains(residueIndex))
-                throw JamException.runtime("Duplicate mutation location: [%d].", residueIndex);
+            if (positions.contains(position))
+                throw JamException.runtime("Duplicate mutation location: [%d].", position);
 
             mutation.apply(residues);
-            residueIndexes.add(residueIndex);
+            positions.add(position);
         }
+    }
+
+    /**
+     * Identifies native peptides having a sequence consistent with
+     * a collection of protein changes.
+     *
+     * @param peptide a peptide to examine.
+     *
+     * @param changes the protein changes to test.
+     *
+     * @return {@code true} iff the residue at the mutation position
+     * in the specified peptide matches the native residue in this
+     * protein change.
+     */
+    public static boolean isNative(Peptide peptide, Collection<ProteinChange> changes) {
+        for (ProteinChange change : changes)
+            if (!change.isNative(peptide))
+                return false;
+
+        return true;
     }
 
     /**
@@ -134,6 +144,23 @@ public final class ProteinChange {
     }
 
     /**
+     * Applies this mutation to a list of residues (representing the
+     * original native peptide structure).
+     *
+     * @param residues the original native peptide structure.
+     *
+     * @throws RuntimeException unless this mutation lies within the
+     * residue list and the residue at the mutation location matches
+     * the native residue in this mutation.
+     */
+    public void apply(List<Residue> residues) {
+        if (position.get(residues).equals(native_))
+            position.set(residues, mutated);
+        else
+            throw JamException.runtime("Mismatch in the native residue [%s].", toString());
+    }
+
+    /**
      * Encodes this protein change in the standard format.
      *
      * @return a string describing this protein change in standard
@@ -141,7 +168,7 @@ public final class ProteinChange {
      */
     public String format() {
         return Character.toString(native_.code1())
-            + Integer.toString(position)
+            + Integer.toString(position.getUnitIndex())
             + Character.toString(mutated.code1());
     }
 
@@ -164,45 +191,14 @@ public final class ProteinChange {
     }
 
     /** 
-     * Returns the position the position in the protein at which the
-     * residue change occurs (starting at position 1, not zero).
+     * Returns the unit-offset position the position in the protein at
+     * which the residue change occurs (starting at position 1).
      *
-     * @return the position the position in the protein at which the
-     * residue change occurs.
+     * @return the unit-offset position the position in the protein at
+     * which the residue change occurs.
      */
-    public int getPosition() {
+    public UnitIndex getPosition() {
         return position;
-    }
-
-    /** 
-     * Returns the zero-offset index of the residue changed by this
-     * mutation.
-     *
-     * @return the zero-offset index of the residue changed by this
-     * mutation.
-     */
-    public int getResidueIndex() {
-        return position - 1;
-    }
-
-    /**
-     * Identifies native peptides having a sequence consistent with
-     * a collection of protein changes.
-     *
-     * @param peptide a peptide to examine.
-     *
-     * @param changes the protein changes to test.
-     *
-     * @return {@code true} iff the residue at the mutation position
-     * in the specified peptide matches the native residue in this
-     * protein change.
-     */
-    public static boolean isNative(Peptide peptide, Collection<ProteinChange> changes) {
-        for (ProteinChange change : changes)
-            if (!change.isNative(peptide))
-                return false;
-
-        return true;
     }
 
     /**
@@ -216,9 +212,7 @@ public final class ProteinChange {
      * protein change.
      */
     public boolean isNative(Peptide peptide) {
-        int residueIndex = getResidueIndex();
-
-        return residueIndex < peptide.length() && peptide.get(residueIndex).equals(native_);
+        return position.isIndexOf(peptide) && position.get(peptide).equals(native_);
     }
 
     /**
@@ -231,26 +225,27 @@ public final class ProteinChange {
      * @param nativeLength the length of the native peptide where
      * the mutation occurred.
      *
-     * @return a list containing the residue index ranges for all
-     * peptide fragments having the specified length that contain
+     * @return a list containing the <em>unit-offset</em> index ranges
+     * for all peptide fragments of the specified length that contain
      * the mutation.
      */
-    public List<IntRange> resolveFragments(int fragmentLength, int nativeLength) {
-        List<IntRange> fragmentRanges =
-            new ArrayList<IntRange>(fragmentLength);
+    public List<UnitIndexRange> resolveFragments(int fragmentLength, int nativeLength) {
+        List<UnitIndexRange> fragmentRanges =
+            new ArrayList<UnitIndexRange>(fragmentLength);
 
-        int mutationIndex = getResidueIndex();
-        int lowerResidue  = Math.max(0, mutationIndex - fragmentLength + 1);
-        int upperResidue  = lowerResidue + fragmentLength - 1;
+        int mutationPosition = position.getUnitIndex();
 
-        while (lowerResidue <= mutationIndex && upperResidue < nativeLength) {
-            IntRange fragmentRange =
-                IntRange.instance(lowerResidue, upperResidue);
+        int lowerPosition = Math.max(1, mutationPosition - fragmentLength + 1);
+        int upperPosition = lowerPosition + fragmentLength - 1;
+
+        while (lowerPosition <= mutationPosition && upperPosition <= nativeLength) {
+            UnitIndexRange fragmentRange =
+                UnitIndexRange.instance(lowerPosition, upperPosition);
 
             fragmentRanges.add(fragmentRange);
 
-            ++lowerResidue;
-            ++upperResidue;
+            ++lowerPosition;
+            ++upperPosition;
         }
 
         return fragmentRanges;
@@ -267,7 +262,7 @@ public final class ProteinChange {
     }
 
     @Override public int hashCode() {
-        return position + 37 * native_.hashCode() + 37 * 37 * mutated.hashCode();
+        return position.getUnitIndex() + 37 * native_.hashCode() + 37 * 37 * mutated.hashCode();
     }
 
     @Override public String toString() {

@@ -13,8 +13,9 @@ import java.util.Map;
 
 import jam.app.JamLogger;
 import jam.io.LineReader;
-import jam.math.IntRange;
 import jam.math.JamRandom;
+import jam.math.UnitIndex;
+import jam.math.UnitIndexRange;
 import jam.report.LineBuilder;
 import jam.util.ListUtil;
 
@@ -276,11 +277,7 @@ public final class Peptide extends AbstractList<Residue> {
     /**
      * Returns a subsegment of this peptide.
      *
-     * <p>The residue indexes in the fragment are {@code 0, ..., range.size() - 1}
-     * and correspond to indexes {@code range.lower(), ..., range.upper()} on this
-     * peptide.
-     *
-     * @param range the zero-offset index range of residues in the
+     * @param range the unit-offset index range of residues in the
      * fragment.
      *
      * @return a read-only view of a subsegment of this peptide.
@@ -288,8 +285,11 @@ public final class Peptide extends AbstractList<Residue> {
      * @throws RuntimeException unless the specified fragment falls
      * entirely within this peptide.
      */
-    public Peptide fragment(IntRange range) {
-        return new Peptide(residues.subList(range.lower(), range.upper() + 1), false);
+    public Peptide fragment(UnitIndexRange range) {
+        int fromIndex = range.lower().getListIndex();     // The lower index is inclusive...
+        int toIndex   = range.upper().getListIndex() + 1; // The upper index is exclusive...
+
+        return new Peptide(residues.subList(fromIndex, toIndex), false);
     }
 
     /**
@@ -379,14 +379,29 @@ public final class Peptide extends AbstractList<Residue> {
 
         List<Peptide> fragments = new ArrayList<Peptide>(length() - N + 1);
 
-        for (int start = 0; start <= length() - N; ++start) {
-            Peptide fragment = fragment(IntRange.instance(start, start + N - 1));
+        for (int start = 1; start <= length() - N + 1; ++start) {
+            Peptide fragment = fragment(UnitIndexRange.instance(start, start + N - 1));
 
             if (fragment.isNative())
                 fragments.add(fragment);
         }
 
         return fragments;
+    }
+
+    /**
+     * Returns the amino acid at a given unit-offset position.
+     *
+     * @param position the unit-offset index of the amino acid
+     * location.
+     *
+     * @return the amino acid at the specified unit-offset position.
+     *
+     * @throws RuntimeException unless the position lies within this
+     * peptide.
+     */
+    public Residue residueAt(UnitIndex position) {
+        return position.get(residues);
     }
 
     /**

@@ -4,7 +4,7 @@ package jene.junit;
 import java.util.ArrayList;
 import java.util.List;
 
-import jam.math.IntRange;
+import jam.math.UnitIndexRange;
 
 import jene.peptide.Peptide;
 import jene.peptide.ProteinChange;
@@ -90,40 +90,40 @@ public class ProteinChangeTest {
 
         assertEquals(L, pc.getNative());
         assertEquals(V, pc.getMutated());
-        assertEquals(123, pc.getPosition());
+        assertEquals(123, pc.getPosition().getUnitIndex());
     }
 
     @Test public void testResolveFragments() {
         ProteinChange pc = ProteinChange.parse("p.L123V");
-        List<IntRange> fragments = pc.resolveFragments(9, 200);
+        List<UnitIndexRange> fragments = pc.resolveFragments(9, 200);
 
-        assertEquals(List.of(IntRange.instance(114, 122),
-                             IntRange.instance(115, 123),
-                             IntRange.instance(116, 124),
-                             IntRange.instance(117, 125),
-                             IntRange.instance(118, 126),
-                             IntRange.instance(119, 127),
-                             IntRange.instance(120, 128),
-                             IntRange.instance(121, 129),
-                             IntRange.instance(122, 130)),
+        assertEquals(List.of(UnitIndexRange.instance(115, 123),
+                             UnitIndexRange.instance(116, 124),
+                             UnitIndexRange.instance(117, 125),
+                             UnitIndexRange.instance(118, 126),
+                             UnitIndexRange.instance(119, 127),
+                             UnitIndexRange.instance(120, 128),
+                             UnitIndexRange.instance(121, 129),
+                             UnitIndexRange.instance(122, 130),
+                             UnitIndexRange.instance(123, 131)),
                      fragments);
 
-        for (IntRange range : fragments)
+        for (UnitIndexRange range : fragments)
             assertEquals(9, range.size());
 
         pc = ProteinChange.parse("p.L3V");
         fragments = pc.resolveFragments(9, 200);
 
-        assertEquals(List.of(IntRange.instance(0, 8),
-                             IntRange.instance(1, 9),
-                             IntRange.instance(2, 10)),
+        assertEquals(List.of(UnitIndexRange.instance(1, 9),
+                             UnitIndexRange.instance(2, 10),
+                             UnitIndexRange.instance(3, 11)),
                      fragments);
 
         pc = ProteinChange.parse("p.L199V");
         fragments = pc.resolveFragments(9, 200);
 
-        assertEquals(List.of(IntRange.instance(190, 198),
-                             IntRange.instance(191, 199)),
+        assertEquals(List.of(UnitIndexRange.instance(191, 199),
+                             UnitIndexRange.instance(192, 200)),
                      fragments);
     }
 
