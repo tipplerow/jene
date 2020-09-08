@@ -1,9 +1,9 @@
 
-## ---------------------------------------------------------------------
+## =====================================================================
 ## R source code for processing supplemental data from Miao et al.,
 ## "Genomic correlates of response to immune checkpoint blockade in
 ## microsatellite-stable solid tumors", Nat. Gen. 50, 1271 (2018).
-## ---------------------------------------------------------------------
+## =====================================================================
 
 Miao.dataVault <- function() {
     dataVault <- Sys.getenv("TIPPLEROW_DATA_VAULT", unset = NA)
@@ -22,20 +22,7 @@ Miao.rawDir <- function() {
     file.path(Miao.homeDir(), "Raw")
 }
 
-## ---------------------------------------------------------------------
-
-Miao.cancerCodeMap <- function() {
-    data.frame(Miao_Cancer_Type = c("Bladder", "HNSCC", "Lung", "Melanoma"),
-               TCGA_Cancer_Type = c("BLCA",    "HNSC",  "LUAD", "SKCM"))
-}
-
-## ---------------------------------------------------------------------
-
-Miao.loadPatientDetail <- function() {
-    read.csv(file.path(Miao.rawDir(), "Miao_SupTable2.csv"))
-}
-
-## ---------------------------------------------------------------------
+## =====================================================================
 
 Miao.buildCoxModelFrame <- function() {
     detailFrame <- Miao.loadPatientDetail()
@@ -75,3 +62,62 @@ Miao.buildCoxModelFrame <- function() {
 
     modelFrame
 }
+
+## ---------------------------------------------------------------------
+
+Miao.buildIndex <- function() {
+    detailFrame <- Miao.loadPatientDetail()
+
+    indexFrame <-
+        data.frame(pair_id = detailFrame$pair_id,
+                   patient_id = detailFrame$patient_id,
+                   Patient_ID = detailFrame$patient_id,
+                   Tumor_Barcode = detailFrame$Tumor_Sample_Barcode,
+                   Tumor_Sample_Barcode = detailFrame$Tumor_Sample_Barcode)
+
+    indexFrame
+}
+
+## ---------------------------------------------------------------------
+
+Miao.cancerCodeMap <- function() {
+    data.frame(Miao_Cancer_Type = c("Bladder", "HNSCC", "Lung", "Melanoma"),
+               TCGA_Cancer_Type = c("BLCA",    "HNSC",  "LUAD", "SKCM"))
+}
+
+## ---------------------------------------------------------------------
+
+Miao.computeTMB <- function(mutDetail) {
+    aggFunc <- function(slice) {
+        data.frame(pair_id = slice$pair_id[1],
+                   missenseCount = sum(slice$Variant_Classification == "Missense_Mutation"),
+                   nonSilentCount = sum(slice$Variant_Classification %in%
+                                        c("Nonstop_Mutation",
+                                          "In_Frame_Ins",
+                                          "In_Frame_Del",
+                                          "Frame_Shift_Ins",
+                                          "Frame_Shift_Del",
+                                          "Missense_Mutation")))
+    }
+
+    result <- do.call(rbind, by(mutDetail, mutDetail$pair_id, aggFunc))
+    rownames(result) <- NULL
+
+    result
+}
+
+## ---------------------------------------------------------------------
+
+Miao.loadMutDetail <- function() {
+    JamIO.load(file.path(Miao.rawDir(), "Miao_SupTable5.RData"))
+}
+
+Miao.loadNeoDetail <- function() {
+    JamIO.load(file.path(Miao.rawDir(), "Miao_SupTable10.RData"))
+}
+
+Miao.loadPatientDetail <- function() {
+    read.csv(file.path(Miao.rawDir(), "Miao_SupTable2.csv"))
+}
+
+## ---------------------------------------------------------------------
