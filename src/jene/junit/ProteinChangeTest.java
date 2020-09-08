@@ -93,6 +93,24 @@ public class ProteinChangeTest {
         assertEquals(123, pc.getPosition().getUnitIndex());
     }
 
+    @Test public void testPositionComparator() {
+        ProteinChange pc1 = ProteinChange.parse("p.L123V");
+        ProteinChange pc2 = ProteinChange.parse("p.Q123C");
+        ProteinChange pc3 = ProteinChange.parse("p.L321V");
+
+        assertTrue(ProteinChange.POSITION_COMPARATOR.compare(pc1, pc1) == 0);
+        assertTrue(ProteinChange.POSITION_COMPARATOR.compare(pc1, pc2) == 0);
+        assertTrue(ProteinChange.POSITION_COMPARATOR.compare(pc1, pc3)  < 0);
+
+        assertTrue(ProteinChange.POSITION_COMPARATOR.compare(pc2, pc1) == 0);
+        assertTrue(ProteinChange.POSITION_COMPARATOR.compare(pc2, pc2) == 0);
+        assertTrue(ProteinChange.POSITION_COMPARATOR.compare(pc2, pc3)  < 0);
+
+        assertTrue(ProteinChange.POSITION_COMPARATOR.compare(pc3, pc1)  > 0);
+        assertTrue(ProteinChange.POSITION_COMPARATOR.compare(pc3, pc2)  > 0);
+        assertTrue(ProteinChange.POSITION_COMPARATOR.compare(pc3, pc3) == 0);
+    }
+
     @Test public void testResolveFragments() {
         ProteinChange pc = ProteinChange.parse("p.L123V");
         List<UnitIndexRange> fragments = pc.resolveFragments(9, 200);

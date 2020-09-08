@@ -3,6 +3,7 @@ package jene.peptide;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -64,6 +65,17 @@ public final class ProteinChange {
         if (!mutated.isNative())
             throw new IllegalArgumentException("Final residue must be naturally occurring.");
     }
+
+    /**
+     * A comparator that orders protein changes by the positions of
+     * their mutations.
+     */
+    public static final Comparator<ProteinChange> POSITION_COMPARATOR =
+        new Comparator<ProteinChange>() {
+            @Override public int compare(ProteinChange pc1, ProteinChange pc2) {
+                return pc1.position.compareTo(pc2.position);
+            }
+        };
 
     /**
      * Applies a collection of mutations to a list of residues
