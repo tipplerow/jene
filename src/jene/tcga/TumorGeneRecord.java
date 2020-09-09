@@ -6,40 +6,17 @@ import java.util.Comparator;
 import jene.hugo.HugoSymbol;
 
 /**
- * Provides a base class for data records indexed by tumor sample and
+ * Provides an interface for data records indexed by tumor sample and
  * HUGO gene symbol.
  */
-public abstract class TumorGeneRecord {
-    /**
-     * The unique identifier for the tumor sample.
-     */
-    protected final TumorBarcode tumorBarcode;
-
-    /**
-     * The unique HUGO symbol for the gene.
-     */
-    protected final HugoSymbol hugoSymbol;
-
-    /**
-     * Creates a data record with fixed tumor and gene identifiers.
-     *
-     * @param tumorBarcode the unique identifier for the tumor sample.
-     *
-     * @param hugoSymbol the unique HUGO symbol for the gene.
-     */
-    protected TumorGeneRecord(TumorBarcode tumorBarcode,
-                              HugoSymbol   hugoSymbol) {
-        this.tumorBarcode = tumorBarcode;
-        this.hugoSymbol   = hugoSymbol;
-    }
-
+public interface TumorGeneRecord {
     /**
      * A comparator that orders records by tumor barcode.
      */
     public static Comparator<TumorGeneRecord> BARCODE_COMPARATOR =
         new Comparator<TumorGeneRecord>() {
             @Override public int compare(TumorGeneRecord rec1, TumorGeneRecord rec2) {
-                return rec1.tumorBarcode.compareTo(rec2.tumorBarcode);
+                return rec1.getTumorBarcode().compareTo(rec2.getTumorBarcode());
             }
         };
 
@@ -49,7 +26,7 @@ public abstract class TumorGeneRecord {
     public static Comparator<TumorGeneRecord> SYMBOL_COMPARATOR =
         new Comparator<TumorGeneRecord>() {
             @Override public int compare(TumorGeneRecord rec1, TumorGeneRecord rec2) {
-                return rec1.hugoSymbol.compareTo(rec2.hugoSymbol);
+                return rec1.getHugoSymbol().compareTo(rec2.getHugoSymbol());
             }
         };
 
@@ -121,16 +98,12 @@ public abstract class TumorGeneRecord {
      *
      * @return the unique identifier for the tumor sample.
      */
-    public TumorBarcode getTumorBarcode() {
-        return tumorBarcode;
-    }
+    public abstract TumorBarcode getTumorBarcode();
 
     /**
      * Returns the unique HUGO symbol for the gene.
      *
      * @return the unique HUGO symbol for the gene.
      */
-    public HugoSymbol getHugoSymbol() {
-        return hugoSymbol;
-    }
+    public abstract HugoSymbol getHugoSymbol();
 }

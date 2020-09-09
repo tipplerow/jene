@@ -13,13 +13,13 @@ import jam.report.LineBuilder;
 import jene.hugo.HugoSymbol;
 import jene.peptide.Peptide;
 import jene.tcga.TumorBarcode;
-import jene.tcga.TumorGeneRecord;
+import jene.tcga.TumorGeneRecordBase;
 
 /**
  * Associates a neo-peptide with the tumor sample, gene, and
  * self-peptide from which it originated.
  */
-public final class PeptidePairRecord extends TumorGeneRecord {
+public final class PeptidePairRecord extends TumorGeneRecordBase {
     private final PeptidePair peptidePair;
     private final UnitIndexRange peptideRange;
 
