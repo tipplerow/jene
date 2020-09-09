@@ -13,6 +13,7 @@ import jene.hugo.HugoSymbol;
 import jene.peptide.Peptide;
 import jene.tcga.CellFraction;
 import jene.tcga.TumorBarcode;
+import jene.tcga.TumorGeneRecordBase;
 
 /**
  * Encodes the protein sequence arising from one or more mutations in
@@ -28,11 +29,9 @@ import jene.tcga.TumorBarcode;
  * {@code compareTo} method considers the tumor barcode first, then
  * HUGO symbol second.
  */
-public final class MAFFastaRecord implements Comparable<MAFFastaRecord> {
-    private final TumorBarcode tumorBarcode;
-    private final HugoSymbol   hugoSymbol;
+public final class MAFFastaRecord extends TumorGeneRecordBase implements Comparable<MAFFastaRecord> {
+    private final Peptide peptide;
     private final CellFraction cellFraction;
-    private final Peptide      peptide;
 
     /**
      * A comparator that orders records by tumor barcode (breaking
@@ -84,10 +83,10 @@ public final class MAFFastaRecord implements Comparable<MAFFastaRecord> {
                           HugoSymbol   hugoSymbol,
                           CellFraction cellFraction,
                           Peptide      peptide) {
-        this.tumorBarcode = tumorBarcode;
-        this.hugoSymbol   = hugoSymbol;
+        super(tumorBarcode, hugoSymbol);
+
+        this.peptide = peptide;
         this.cellFraction = cellFraction;
-        this.peptide      = peptide;
     }
 
     /**
@@ -153,24 +152,6 @@ public final class MAFFastaRecord implements Comparable<MAFFastaRecord> {
      */
     public String format() {
         return toFastaPeptideRecord().format();
-    }
-
-    /**
-     * Returns the tumor barcode for this record.
-     *
-     * @return the tumor barcode for this record.
-     */
-    public TumorBarcode getTumorBarcode() {
-        return tumorBarcode;
-    }
-
-    /**
-     * Returns the symbol of the mutated gene for this record.
-     *
-     * @return the symbol of the mutated gene for this record.
-     */
-    public HugoSymbol getHugoSymbol() {
-        return hugoSymbol;
     }
 
     /**

@@ -17,6 +17,7 @@ import jene.ensembl.EnsemblTranscriptID;
 import jene.hugo.HugoSymbol;
 import jene.peptide.ProteinChange;
 import jene.tcga.TumorBarcode;
+import jene.tcga.TumorGeneRecordBase;
 import jene.tcga.CellFraction;
 
 /**
@@ -24,12 +25,10 @@ import jene.tcga.CellFraction;
  * Annotation Format (MAF) file that describes only <b>missense</b>
  * mutations.
  */
-public final class MissenseRecord {
-    private final TumorBarcode        tumorBarcode;
+public final class MissenseRecord extends TumorGeneRecordBase {
+    private final CellFraction cellFraction;
+    private final ProteinChange proteinChange;
     private final EnsemblTranscriptID transcriptID;
-    private final HugoSymbol          hugoSymbol;
-    private final ProteinChange       proteinChange;
-    private final CellFraction        cellFraction;
 
     /**
      * Creates a new missense mutation record.
@@ -50,11 +49,11 @@ public final class MissenseRecord {
                           HugoSymbol          hugoSymbol,
                           ProteinChange       proteinChange,
                           CellFraction        cellFraction) {
-        this.tumorBarcode  = tumorBarcode;
-        this.transcriptID  = transcriptID;
-        this.hugoSymbol    = hugoSymbol;
-        this.proteinChange = proteinChange;
+        super(tumorBarcode, hugoSymbol);
+
         this.cellFraction  = cellFraction;
+        this.proteinChange = proteinChange;
+        this.transcriptID  = transcriptID;
     }
 
     /**
@@ -169,15 +168,6 @@ public final class MissenseRecord {
     }
 
     /**
-     * Returns the HUGO symbol of the mutated gene.
-     *
-     * @return the HUGO symbol of the mutated gene.
-     */
-    public HugoSymbol getHugoSymbol() {
-        return hugoSymbol;
-    }
-
-    /**
      * Returns the description of the single-residue change.
      *
      * @return the description of the single-residue change.
@@ -193,15 +183,6 @@ public final class MissenseRecord {
      */
     public EnsemblTranscriptID getTranscriptID() {
         return transcriptID;
-    }
-
-    /**
-     * Returns the tumor in which the mutation occurred.
-     *
-     * @return the tumor in which the mutation occurred.
-     */
-    public TumorBarcode getTumorBarcode() {
-        return tumorBarcode;
     }
 
     /**
