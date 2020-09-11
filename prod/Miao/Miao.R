@@ -41,7 +41,10 @@ Miao.buildCoxModelFrame <- function() {
                    Cancer_Index  = detailFrame$Cancer_Index,
                    Drug_Type     = detailFrame$drug_type,
                    OS_Days       = detailFrame$os_days,
-                   PFS_Days      = detailFrame$pfs_days)
+                   PFS_Days      = detailFrame$pfs_days,
+                   RECIST        = detailFrame$RECIST,
+                   VA            = detailFrame$va_response,
+                   ROH           = detailFrame$roh_response)
 
     ## Death occurred if the overall survival is censored...
     modelFrame$OS_Event <- 1L - detailFrame$os_censor
