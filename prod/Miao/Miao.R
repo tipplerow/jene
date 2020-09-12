@@ -106,7 +106,14 @@ Miao.computeTMB <- function(mutDetail) {
     result <- do.call(rbind, by(mutDetail, mutDetail$pair_id, aggFunc))
     rownames(result) <- NULL
 
+    index  <- Miao.buildIndex()
+    result <- merge(result, index, by = "pair_id")
+    result <- result[,c("Tumor_Barcode", "missenseCount", "nonSilentCount")]
     result
+}
+
+Miao.writeTMB <- function(tmb) {
+    write.csv(tmb, file.path(Miao.homeDir(), "Cohort", "Miao_TMB.csv"), quote = FALSE, row.names = FALSE)
 }
 
 ## ---------------------------------------------------------------------
@@ -121,6 +128,57 @@ Miao.loadNeoDetail <- function() {
 
 Miao.loadPatientDetail <- function() {
     read.csv(file.path(Miao.rawDir(), "Miao_SupTable2.csv"))
+}
+
+Miao.loadTMB <- function() {
+    read.csv(file.path(Miao.homeDir(), "Cohort", "Miao_TMB.csv"))
+}
+
+## ---------------------------------------------------------------------
+
+Miao.pairRN <- function() {
+    dframe <- Miao.buildCoxModelFrame()
+    dframe <- merge(dframe, Miao.loadTMB(), by = "Tumor_Barcode")
+    dframe <- dframe[order(dframe$Cancer_Type, dframe$Drug_Type, dframe$missenseCount),]
+
+    dframe$Responder <-
+        dframe$ROH == "clinical benefit"
+
+    pairList <- list()
+
+    for (k2 in 2:nrow(dframe)) {
+        k1 <- k2 - 1
+
+        if (dframe$Cancer_Type[k1] != dframe$Cancer_Type[k2])
+            next
+
+        if (dframe$Drug_Type[k1] != dframe$Drug_Type[k2])
+            next
+
+        if (dframe$Responder[k1] == dframe$Responder[k2])
+            next
+
+        if (dframe$Responder[k1]) {
+            res <- k1
+            non <- k2
+        }
+        else {
+            res <- k2
+            non <- k1
+        }
+
+        stopifnot(isTRUE(dframe$Responder[res]))
+        stopifnot(isFALSE(dframe$Responder[non]))
+
+        pairRow <-
+            data.frame(Tumor_Barcode.Responder = dframe$Tumor_Barcode[res],
+                       Tumor_Barcode.NonResponder = dframe$Tumor_Barcode[non])
+
+        pairList[[length(pairList) + 1]] <- pairRow
+    }
+
+    pairFrame <- do.call(rbind, pairList)
+    pairFrame
 }
 
 ## ---------------------------------------------------------------------
