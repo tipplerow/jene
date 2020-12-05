@@ -1,0 +1,73 @@
+
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+repositories {
+    // Use jcenter for resolving dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    jcenter()
+
+    maven {
+        name = 'TipplerowMaven'
+        url = "file://${System.getenv('TIPPLEROW_REPO_DIR')}"
+    }
+}
+
+dependencies {
+    api 'com.google.guava:guava:29.0-jre'
+    api 'com.tipplerow:jam:1.0'
+
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+    implementation 'org.slf4j:slf4j-simple:1.7.30'
+
+    testImplementation 'junit:junit:4.13'
+}
+
+compileJava {
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+javadoc {
+    source = sourceSets.main.allJava
+    classpath = sourceSets.main.runtimeClasspath
+    options.addBooleanOption("Xdoclint:-missing", true)
+
+    options {
+        links 'https://docs.oracle.com/en/java/javase/15/docs/api/'
+        links "file://${System.getProperty('user.home')}/GitHub/jam/build/docs/javadoc/"
+    }
+}
+
+test {
+    testLogging {
+        showStandardStreams = true
+    }
+
+    maxHeapSize = '64g'
+    maxParallelForks = 8
+}
+
+group = 'com.tipplerow'
+version = '1.0'
+
+publishing {
+    publications {
+        TipplerowMaven(MavenPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            name = 'TipplerowMaven'
+            url = "file://${System.getenv('TIPPLEROW_REPO_DIR')}"
+        }
+    }
+}

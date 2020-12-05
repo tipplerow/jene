@@ -1,4 +1,5 @@
 ########################################################################
 # Shell aliases for JENE project development.
 ########################################################################
-alias jene="cd ${JENE_HOME}/src/jene"
+alias jes="cd ${JENE_HOME}/src/main/java/jene"
+alias jet="cd ${JENE_HOME}/src/test/java/jene"
